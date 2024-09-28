@@ -1,6 +1,22 @@
 #!/usr/bin/env python3
 # template_cleaner.py
 
+# Objective: Script to remove unecessary code from CSS and SCSS files.
+# When using HTML/CSS template, there is always so much unused classes and ids.
+# Input: Directory where the web application is.
+# Output:
+    # Load the web app to record current page layout for later validation
+    # List of all CSS, SCSS, JS and HTML files found (along with how many unique class and id)
+    # List the CSS and SCSS files initial size
+    # Initial number of class and id in the CSS and SCSS files
+    # List of how many classes and id in CSS and SCSS files that are not being used
+    # List the CSS and SCSS files size after removing unused classes and id (along with how much size was freed)
+    # After finish removing, open web app and compare with initial layout
+    # Create a css and scss file backup before removing unused attributes
+    # If layout is different than initial layout, prompt to revert the changes
+    # Able to use a backup file to later restore the css and scss files
+
+
 import os
 import sys
 import re
