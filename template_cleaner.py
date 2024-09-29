@@ -108,11 +108,13 @@ def find_css_files(target_dir):
                 target_path = f"{target_dir}/{file}"
                 print(f"Target location: {target_path}")
                 change_dir(target_path)
-                print(f"List all files in {file} folder: {os.listdir(get_current_location())}")
                 for css_file in os.listdir(get_current_location()):
                     if "css" == css_file.split(".")[-1]:
                         print(f"CSS file to be scanned: {css_file}")
-
+                        file_path = f"{os.getcwd()}/{css_file}"
+                        with open(file_path, mode='r',encoding='UTF-8') as target_file:
+                            for line in target_file:
+                                print(line)
 
 
 def controller():    
