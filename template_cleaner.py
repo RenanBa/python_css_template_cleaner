@@ -21,25 +21,29 @@ import os
 import sys
 import re
 
-html_files = [] # store absolut path of each html file
+html_files_found = [] # store absolut path of each html file
 css_files = [] # store absolut path of each css file
 class_list_no_dup = []
 id_found = []
 
+
 def does_path_exist(path):
-    print("Checking if path is a valid directory...")
+    print("Checking if path exists...")
     return os.path.exists(path)
 
 def is_directoty(path):
-    print("Checking if path is a valid directory...")
+    print("Checking if path is a directory...")
     return os.path.isdir(path)
 
 def check_user_input(input):
-    print("Checking user input...")
+    print(f"Checking user input: {input}")
+    # check if input has user
     if (len(input) > 1):
-        if does_path_exist(input[1]) and is_directoty(input[1]):
+        # set the parent directory path
+        parent_dir = f"../{input[1]}"
+        if does_path_exist(parent_dir) and is_directoty(parent_dir):
             print(f"User input is valid: {input[1]}")
-            return input[1]
+            return parent_dir
         else:
             print(f"User input is invlaid")
             sys.exit("Input is not a directory or doesn't exists")
@@ -59,16 +63,13 @@ def get_current_location():
 
 
 def read_and_save_html_classes(file_path):
-    print(file_path)
+    print(f"Scanning HTML file... path: {file_path}")
+    html_files_found.append(file_path)
     att_found_html = []
-    # Read each line ad collect all classes
     with open(file_path, mode='r',encoding='UTF-8') as html_file:
         for line in html_file:
-            # if "id"
             if "class" in line:
-                print(line)
                 search = re.findall(r"class=\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
-                print(search)
                 class_list = " ".join(search).split(" ")
                 if len(search) >= 1:
                     att_found_html.append(class_list)
@@ -77,6 +78,7 @@ def read_and_save_html_classes(file_path):
                 id_list = " ".join(search).split(" ")
                 if len(search) >= 1:
                     att_found_html.append(id_list)
+        print("HTML file scanned for classes and ids.")
     
     # Consolidate the list of list into one single list
     new_class_list = sum(att_found_html, [])
@@ -85,8 +87,10 @@ def read_and_save_html_classes(file_path):
 
     
 # Find HTML files and then call read_and_save_html_classes to extract id and class
-def get_html_classes(target_dir):
+def find_html_files(target_dir):
+    print("Looking for HML files...")
     current_dir_list = os.listdir(target_dir)
+    print(f"All files in this directory: {current_dir_list}")
     for item in current_dir_list:
         item_type = item.split(".")
         if len(item_type) > 1:
@@ -97,25 +101,16 @@ def get_html_classes(target_dir):
     
 
 
-def controller():
-
+def controller():    
     user_input = check_user_input(sys.argv)
-    current_dir = os.getcwd()
-    target_dir = f"{current_dir}/{user_input}"
-
-    # get_current_location()
-    # print(f"target directory: {target_dir}")
-
-    # change_dir(target_dir)
-    # get_current_location()
 
     print(f"Attibutes list before: {class_list_no_dup}")
-    
-    get_html_classes(target_dir)
-    
-    # print(class_list_no_dup)
-    # print(len(class_list_no_dup))
+    find_html_files(user_input)
+    print(f"List of all HTML files found: {html_files_found}")
+    all_attributes = sum(class_list_no_dup, [])
+    print(f"Unique attributes found: {len(all_attributes)}")
 
+    # print("Looking for css files...")
     # curent_dir_list = os.listdir(target_dir)
     # for item in curent_dir_list:
     #     print(item.split("."))
@@ -128,5 +123,5 @@ def controller():
 
 
 controller()
-print('End of the file')
+print('End of the script')
 
