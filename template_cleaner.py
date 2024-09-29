@@ -79,7 +79,6 @@ def read_and_save_html_classes(file_path):
                 if len(search) >= 1:
                     att_found_html.append(id_list)
         print("HTML file scanned for classes and ids.")
-    
     # Consolidate the list of list into one single list
     new_class_list = sum(att_found_html, [])
     # Remove duplicated items in the list
@@ -87,7 +86,7 @@ def read_and_save_html_classes(file_path):
 
     
 # Find HTML files and then call read_and_save_html_classes to extract id and class
-def find_html_files(target_dir):
+def collect_html_att(target_dir):
     print("Looking for HML files...")
     current_dir_list = os.listdir(target_dir)
     print(f"All files in this directory: {current_dir_list}")
@@ -98,22 +97,39 @@ def find_html_files(target_dir):
                 print(f"HTML files found: {item_type[0]}.{item_type[1]}")
                 read_and_save_html_classes(f"{target_dir}/{item_type[0]}.{item_type[1]}")
                 # sys.exit("stoping before ")
+    return sum(class_list_no_dup, [])
     
+def find_css_files(target_dir):
+    print("Looking for css files... ")
+    for file in os.listdir(target_dir):
+        if "css" in file.split("."):
+            print(f"CSS file found.. {file}")
+            if does_path_exist(f"{target_dir}/{file}") and is_directoty(f"{target_dir}/{file}"):
+                target_path = f"{target_dir}/{file}"
+                print(f"Target location: {target_path}")
+                change_dir(target_path)
+                print(f"List all files in {file} folder: {os.listdir(get_current_location())}")
+                for css_file in os.listdir(get_current_location()):
+                    if "css" == css_file.split(".")[-1]:
+                        print(f"CSS file to be scanned: {css_file}")
+
 
 
 def controller():    
     user_input = check_user_input(sys.argv)
+    print("====================================================================")
+    print("=======================  Reading HTML files  =======================")
 
     print(f"Attibutes list before: {class_list_no_dup}")
-    find_html_files(user_input)
+    all_attributes = collect_html_att(user_input)
     print(f"List of all HTML files found: {html_files_found}")
-    all_attributes = sum(class_list_no_dup, [])
     print(f"Unique attributes found: {len(all_attributes)}")
 
-    # print("Looking for css files...")
-    # curent_dir_list = os.listdir(target_dir)
-    # for item in curent_dir_list:
-    #     print(item.split("."))
+    
+    print("===================================================================")
+    print("=======================  Reading CSS files  =======================")
+
+    find_css_files(user_input)
     
 
 
