@@ -70,12 +70,13 @@ def read_and_save_html_classes(file_path):
         for line in html_file:
             if "class" in line:
                 print(f"css found in this line: {line}")
-                search = re.findall(r"class=\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
-                print(f"Regx search: {search}")
-                class_list = " ".join(search).split(" ")
+                search = re.findall(r"(class[a-zA-Z0-9_-]*=|class[a-zA-Z0-9_-]* = )\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
+                print(f"Regx search found: {search}")
+                # NEED TO COLLECT ALL CLASSES FROM ARRAY OF TUPLES
                 if len(search) >= 1:
+                    class_list = " ".join(search[0]).split(" ")
                     att_found_html.append(class_list)
-            elif "id=" in line:
+            if "id=" in line:
                 search = re.findall(r"id=\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
                 id_list = " ".join(search).split(" ")
                 if len(search) >= 1:
@@ -84,7 +85,7 @@ def read_and_save_html_classes(file_path):
     # Consolidate the list of list into one single list
     new_class_list = sum(att_found_html, [])
     # Remove duplicated items in the list
-    class_list_no_dup.append(list(set(new_class_list)))
+    class_list_no_dup.append(new_class_list)
 
     
 # Find HTML files and then call read_and_save_html_classes to extract id and class
@@ -147,9 +148,9 @@ def controller():
     print("=======================  Reading HTML files  =======================")
 
     print(f"Attibutes list before: {class_list_no_dup}")
-    all_attributes = collect_html_att(user_input)
+    all_attributes = list(set(collect_html_att(user_input)))
     print(f"List of all HTML files found: {html_files_found}")
-    print(f"Unique attributes found: {len(all_attributes)}")
+    print(f"Unique attributes found: {all_attributes}")
 
     
     print("===================================================================")
