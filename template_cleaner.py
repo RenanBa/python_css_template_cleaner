@@ -70,11 +70,14 @@ def read_and_save_html_classes(file_path):
         for line in html_file:
             if "class" in line:
                 print(f"css found in this line: {line}")
-                search = re.findall(r"(class[a-zA-Z0-9_-]*=|class[a-zA-Z0-9_-]* = )\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
+                search = re.findall(r"(class[a-zA-Z0-9_-]*=|class[a-zA-Z0-9_-]* = |class[a-zA-Z0-9_-]* == )\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
                 print(f"Regx search found: {search}")
-                # NEED TO COLLECT ALL CLASSES FROM ARRAY OF TUPLES
+                # Need to collect classes in the javascript in the script element block
                 if len(search) >= 1:
-                    class_list = " ".join(search[0]).split(" ")
+                    # Second search to extract the classes from tuples and add into list
+                    sec_search = re.findall(r"class[a-zA-Z0-9_-]*=\"([\s\wa-zA-Z0-9_-]*)\"", line)
+                    print(f"Second search: {sec_search}")
+                    class_list = " ".join(sec_search).split(" ")
                     att_found_html.append(class_list)
             if "id=" in line:
                 search = re.findall(r"id=\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
@@ -151,6 +154,7 @@ def controller():
     all_attributes = list(set(collect_html_att(user_input)))
     print(f"List of all HTML files found: {html_files_found}")
     print(f"Unique attributes found: {all_attributes}")
+    print(f"Unique attributes found: {len(all_attributes)}")
 
     
     print("===================================================================")
