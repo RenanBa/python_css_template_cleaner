@@ -69,12 +69,16 @@ def read_and_save_html_classes(file_path):
     with open(file_path, mode='r',encoding='UTF-8') as html_file:
         for line in html_file:
             if "class" in line:
-                print(f"css found in this line: {line}")
+                # print(f"css found in this line: {line}")
                 search = re.findall(r"(class[a-zA-Z0-9_-]*=|class[a-zA-Z0-9_-]* = |class[a-zA-Z0-9_-]* == )\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
-                print(f"Regx search found: {search}")
-                # Need to collect classes in the javascript in the script element block
+                # print(f"Regx search found: {search}")
+                
+                # Check for js script
+                if len(search) == 0:
+                    search = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
+
+                # Second search to extract the classes from tuples and add into list
                 if len(search) >= 1:
-                    # Second search to extract the classes from tuples and add into list
                     sec_search = re.findall(r"class[a-zA-Z0-9_-]*=\"([\s\wa-zA-Z0-9_-]*)\"", line)
                     print(f"Second search: {sec_search}")
                     class_list = " ".join(sec_search).split(" ")
