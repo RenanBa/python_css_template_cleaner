@@ -78,59 +78,48 @@ def find_html_file(search_dir):
                 html_files.append(f"{search_dir}/{item_type[0]}.{item_type[1]}")
     return html_files
 
+def search_class_in_line(line):
+    # print(f"css found in this line: {line}")
+    search = re.findall(r"(class[a-zA-Z0-9_-]*=|class[a-zA-Z0-9_-]* = |class[a-zA-Z0-9_-]* == )\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
+    # print(f"Regx search found: {search}")
+    # Check for js script
+    if len(search) == 0:
+        search_js = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
+        return search_js
+    # Second search to extract the classes from tuples and add into list
+    if len(search) >= 1:
+        sec_search = re.findall(r"class[a-zA-Z0-9_-]*=\"([\s\wa-zA-Z0-9_-]*)\"", line)
+        class_list = " ".join(sec_search).split(" ")
+        return class_list
 
-def read_and_save_html_classes(file_path):
+def search_id_in_line(line):
+    search = re.findall(r"id=\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
+    id_list = " ".join(search).split(" ")
+    # Check for js script
+    if len(search) == 0:
+        search_js = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
+        return search_js
+
+    if len(search) >= 1:
+        return id_list
+
+
+def read_file_and_collect_att(file_path):
     print(f"Scanning HTML file... path: {file_path}")
-    html_files_found.append(file_path)
+    # html_files_found.append(file_path)
     att_found_html = []
     with open(file_path, mode='r',encoding='UTF-8') as html_file:
         for line in html_file:
             if "class" in line:
-                # print(f"css found in this line: {line}")
-                search = re.findall(r"(class[a-zA-Z0-9_-]*=|class[a-zA-Z0-9_-]* = |class[a-zA-Z0-9_-]* == )\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
-                # print(f"Regx search found: {search}")
-                
-                # Check for js script
-                if len(search) == 0:
-                    search_js = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
-                    att_found_html.append(search_js)
-
-                # Second search to extract the classes from tuples and add into list
-                if len(search) >= 1:
-                    sec_search = re.findall(r"class[a-zA-Z0-9_-]*=\"([\s\wa-zA-Z0-9_-]*)\"", line)
-                    class_list = " ".join(sec_search).split(" ")
-                    att_found_html.append(class_list)
+                att_found_html.append(search_class_in_line(line))
             if "id=" in line:
-                search = re.findall(r"id=\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
-                id_list = " ".join(search).split(" ")
-                # Check for js script
-                if len(search) == 0:
-                    search_js = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
-                    att_found_html.append(search_js)
-
-                if len(search) >= 1:
-                    att_found_html.append(id_list)
+                att_found_html.append(search_id_in_line(line))
         print("HTML file scanned for classes and ids.")
     # Consolidate the list of list into one single list
     new_class_list = sum(att_found_html, [])
     # Remove duplicated items in the list
     class_list_no_dup.append(new_class_list)
 
-    
-
-# Find HTML files and then call read_and_save_html_classes to extract id and class
-def collect_html_att(target_dir):
-    print("Looking for HML files...")
-    current_dir_list = os.listdir(target_dir)
-    print(f"All files in this directory: {current_dir_list}")
-    for item in current_dir_list:
-        item_type = item.split(".")
-        if len(item_type) > 1:
-            if item_type[1] == "html":
-                print(f"HTML files found: {item_type[0]}.{item_type[1]}")
-                read_and_save_html_classes(f"{target_dir}/{item_type[0]}.{item_type[1]}")
-                # sys.exit("stoping before ")
-    return sum(class_list_no_dup, [])
     
 def find_css_files(target_dir):
     print("Looking for css files... ")
@@ -180,9 +169,11 @@ def controller():
     print(f"Attibutes list before: {class_list_no_dup}")
     html_file_list = find_html_file(user_input)
     print(f"call find_html_file: {html_file_list}")
+    read_file_and_collect_att(html_file_list[0])
+
+    # print(f"Attibutes list after: {class_list_no_dup}")
 
     # all_attributes = list(set(collect_html_att(user_input)))
-    # print(f"List of all HTML files found: {html_files_found}")
     # # print(f"Unique attributes found: {all_attributes}")
     # print(f"Unique attributes found: {len(all_attributes)}")
 
