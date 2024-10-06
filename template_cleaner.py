@@ -27,6 +27,7 @@ class_list_no_dup = []
 id_found = []
 
 
+
 def does_path_exist(path):
     print("Checking if path exists...")
     return os.path.exists(path)
@@ -75,17 +76,22 @@ def read_and_save_html_classes(file_path):
                 
                 # Check for js script
                 if len(search) == 0:
-                    search = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
+                    search_js = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
+                    att_found_html.append(search_js)
 
                 # Second search to extract the classes from tuples and add into list
                 if len(search) >= 1:
                     sec_search = re.findall(r"class[a-zA-Z0-9_-]*=\"([\s\wa-zA-Z0-9_-]*)\"", line)
-                    print(f"Second search: {sec_search}")
                     class_list = " ".join(sec_search).split(" ")
                     att_found_html.append(class_list)
             if "id=" in line:
                 search = re.findall(r"id=\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
                 id_list = " ".join(search).split(" ")
+                # Check for js script
+                if len(search) == 0:
+                    search_js = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
+                    att_found_html.append(search_js)
+
                 if len(search) >= 1:
                     att_found_html.append(id_list)
         print("HTML file scanned for classes and ids.")
@@ -95,6 +101,7 @@ def read_and_save_html_classes(file_path):
     class_list_no_dup.append(new_class_list)
 
     
+
 # Find HTML files and then call read_and_save_html_classes to extract id and class
 def collect_html_att(target_dir):
     print("Looking for HML files...")
@@ -157,7 +164,7 @@ def controller():
     print(f"Attibutes list before: {class_list_no_dup}")
     all_attributes = list(set(collect_html_att(user_input)))
     print(f"List of all HTML files found: {html_files_found}")
-    print(f"Unique attributes found: {all_attributes}")
+    # print(f"Unique attributes found: {all_attributes}")
     print(f"Unique attributes found: {len(all_attributes)}")
 
     
