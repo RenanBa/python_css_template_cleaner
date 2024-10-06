@@ -63,7 +63,6 @@ def get_current_location():
     current_dir = os.getcwd()
     print(f"Current directory: {current_dir}")
     return current_dir
-
     
 def find_html_file(search_dir):
     print("Searching for HML files...")
@@ -79,9 +78,7 @@ def find_html_file(search_dir):
     return html_files
 
 def search_class_in_line(line):
-    # print(f"css found in this line: {line}")
     search = re.findall(r"(class[a-zA-Z0-9_-]*=|class[a-zA-Z0-9_-]* = |class[a-zA-Z0-9_-]* == )\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
-    # print(f"Regx search found: {search}")
     # Check for js script
     if len(search) == 0:
         search_js = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
@@ -103,22 +100,21 @@ def search_id_in_line(line):
     if len(search) >= 1:
         return id_list
 
-
 def read_file_and_collect_att(file_path):
-    print(f"Scanning HTML file... path: {file_path}")
-    # html_files_found.append(file_path)
-    att_found_html = []
-    with open(file_path, mode='r',encoding='UTF-8') as html_file:
-        for line in html_file:
-            if "class" in line:
-                att_found_html.append(search_class_in_line(line))
-            if "id=" in line:
-                att_found_html.append(search_id_in_line(line))
-        print("HTML file scanned for classes and ids.")
-    # Consolidate the list of list into one single list
-    new_class_list = sum(att_found_html, [])
-    # Remove duplicated items in the list
-    class_list_no_dup.append(new_class_list)
+    for path in file_path:
+        print(f"Scanning HTML file... path: {path}")
+        att_found_html = []
+        with open(path, mode='r',encoding='UTF-8') as html_file:
+            for line in html_file:
+                if "class" in line:
+                    att_found_html.append(search_class_in_line(line))
+                if "id=" in line:
+                    att_found_html.append(search_id_in_line(line))
+            print("HTML file scanned for classes and ids.")
+        # Consolidate the list of list into one single list
+        new_class_list = sum(att_found_html, [])
+        # Remove duplicated items in the list
+        class_list_no_dup.append(new_class_list)
 
     
 def find_css_files(target_dir):
@@ -160,7 +156,6 @@ def find_css_files(target_dir):
                                                 # }
                                         #     }
 
-
 def controller():    
     user_input = check_user_input(sys.argv)
     print("====================================================================")
@@ -169,13 +164,15 @@ def controller():
     print(f"Attibutes list before: {class_list_no_dup}")
     html_file_list = find_html_file(user_input)
     print(f"call find_html_file: {html_file_list}")
-    read_file_and_collect_att(html_file_list[0])
+    read_file_and_collect_att(html_file_list)
+    unique_list = list(set(sum(class_list_no_dup, [])))
+    print(f"class_list_no_dup and id: {unique_list}")
 
     # print(f"Attibutes list after: {class_list_no_dup}")
 
     # all_attributes = list(set(collect_html_att(user_input)))
     # # print(f"Unique attributes found: {all_attributes}")
-    # print(f"Unique attributes found: {len(all_attributes)}")
+    print(f"Unique attributes found: {len(unique_list)}")
 
     
     print("===================================================================")
