@@ -21,10 +21,13 @@ import os
 import sys
 import re
 
+
+class_list_no_dup = []
 html_files_found = [] # store absolut path of each html file
 css_files = [] # store absolut path of each css file
-class_list_no_dup = []
-id_found = []
+html_search_obj = {} # {"html": '../zappizza.github.io/index.html', id_att: ['abc'], css_att: ['xyz]}
+css_search_obj = {} # {"css": '../zappizza.github.io/css/style.css', id_match: ['abc'], css_match: ['xyz], id_no_match: ['abc'], css_no_match: ['xyz]}
+
 
 
 
@@ -61,6 +64,19 @@ def get_current_location():
     print(f"Current directory: {current_dir}")
     return current_dir
 
+    
+def find_html_file(search_dir):
+    print("Searching for HML files...")
+    current_dir_list = os.listdir(search_dir)
+    print(f"Listing all files in current dir: {current_dir_list}")
+    html_files = []
+    for item in current_dir_list:
+        item_type = item.split(".")
+        if len(item_type) > 1:
+            if item_type[1] == "html":
+                print(f"HTML files found: {item_type[0]}.{item_type[1]}")
+                html_files.append(f"{search_dir}/{item_type[0]}.{item_type[1]}")
+    return html_files
 
 
 def read_and_save_html_classes(file_path):
@@ -162,10 +178,13 @@ def controller():
     print("=======================  Reading HTML files  =======================")
 
     print(f"Attibutes list before: {class_list_no_dup}")
-    all_attributes = list(set(collect_html_att(user_input)))
-    print(f"List of all HTML files found: {html_files_found}")
-    # print(f"Unique attributes found: {all_attributes}")
-    print(f"Unique attributes found: {len(all_attributes)}")
+    html_file_list = find_html_file(user_input)
+    print(f"call find_html_file: {html_file_list}")
+
+    # all_attributes = list(set(collect_html_att(user_input)))
+    # print(f"List of all HTML files found: {html_files_found}")
+    # # print(f"Unique attributes found: {all_attributes}")
+    # print(f"Unique attributes found: {len(all_attributes)}")
 
     
     print("===================================================================")
