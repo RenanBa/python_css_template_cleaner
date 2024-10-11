@@ -44,19 +44,13 @@ class HtmlFileReader():
             return id_list
 
     def read_file_and_collect_att(self, file_path):
-        class_list_no_dup = []
-        for path in file_path:
-            print(f"Scanning HTML file... path: {path}")
-            att_found_html = []
-            with open(path, mode='r',encoding='UTF-8') as html_file:
-                for line in html_file:
-                    if "class" in line:
-                        att_found_html.append(self.search_class_in_line(line))
-                    if "id=" in line:
-                        att_found_html.append(self.search_id_in_line(line))
-                print("HTML file scanned for classes and ids.")
-            # Consolidate the list of list into one single list
-            new_class_list = sum(att_found_html, [])
-            # Remove duplicated items in the list
-            # class_list_no_dup.append(new_class_list)
-            return new_class_list
+        att_found_html = []
+        with open(file_path, mode='r',encoding='UTF-8') as html_file:
+            for line in html_file:
+                if "class" in line:
+                    att_found_html.append(self.search_class_in_line(line))
+                if "id=" in line:
+                    att_found_html.append(self.search_id_in_line(line))
+            print(f"HTML file ({file_path}) scanned for classes and ids.")
+        new_class_list = sum(att_found_html, [])
+        return new_class_list
