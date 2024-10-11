@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # template_cleaner.py
 
+
 # Objective: Script to remove unecessary code from CSS and SCSS files.
 # When using HTML/CSS template, there is always so much unused classes and ids.
 # Input: Directory where the web application is.
@@ -19,16 +20,16 @@
 
 import os
 import sys
-import re
+from html_file_reader import *
 
 
-class_list_no_dup = []
 html_files_found = [] # store absolut path of each html file
 css_files = [] # store absolut path of each css file
 html_search_obj = {} # {"html": '../zappizza.github.io/index.html', id_att: ['abc'], css_att: ['xyz]}
 css_search_obj = {} # {"css": '../zappizza.github.io/css/style.css', id_match: ['abc'], css_match: ['xyz], id_no_match: ['abc'], css_no_match: ['xyz]}
 
 
+html_reader = HtmlFileReader()
 
 
 def does_path_exist(path):
@@ -63,58 +64,6 @@ def get_current_location():
     current_dir = os.getcwd()
     print(f"Current directory: {current_dir}")
     return current_dir
-    
-def find_html_file(search_dir):
-    print("Searching for HML files...")
-    current_dir_list = os.listdir(search_dir)
-    print(f"Listing all files in current dir: {current_dir_list}")
-    html_files = []
-    for item in current_dir_list:
-        item_type = item.split(".")
-        if len(item_type) > 1:
-            if item_type[1] == "html":
-                print(f"HTML files found: {item_type[0]}.{item_type[1]}")
-                html_files.append(f"{search_dir}/{item_type[0]}.{item_type[1]}")
-    return html_files
-
-def search_class_in_line(line):
-    search = re.findall(r"(class[a-zA-Z0-9_-]*=|class[a-zA-Z0-9_-]* = |class[a-zA-Z0-9_-]* == )\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
-    # Check for js script
-    if len(search) == 0:
-        search_js = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
-        return search_js
-    # Second search to extract the classes from tuples and add into list
-    if len(search) >= 1:
-        sec_search = re.findall(r"class[a-zA-Z0-9_-]*=\"([\s\wa-zA-Z0-9_-]*)\"", line)
-        class_list = " ".join(sec_search).split(" ")
-        return class_list
-
-def search_id_in_line(line):
-    search = re.findall(r"id=\"([\s\wa-zA-Z0-9_-]*)\"", line)  # 
-    id_list = " ".join(search).split(" ")
-    # Check for js script
-    if len(search) == 0:
-        search_js = re.findall(r"\.[a-zA-Z0-9_-]*\(\"([a-zA-Z0-9_-]*)\"\)", line)
-        return search_js
-
-    if len(search) >= 1:
-        return id_list
-
-def read_file_and_collect_att(file_path):
-    for path in file_path:
-        print(f"Scanning HTML file... path: {path}")
-        att_found_html = []
-        with open(path, mode='r',encoding='UTF-8') as html_file:
-            for line in html_file:
-                if "class" in line:
-                    att_found_html.append(search_class_in_line(line))
-                if "id=" in line:
-                    att_found_html.append(search_id_in_line(line))
-            print("HTML file scanned for classes and ids.")
-        # Consolidate the list of list into one single list
-        new_class_list = sum(att_found_html, [])
-        # Remove duplicated items in the list
-        class_list_no_dup.append(new_class_list)
 
     
 def find_css_files(target_dir):
@@ -156,22 +105,18 @@ def find_css_files(target_dir):
                                                 # }
                                         #     }
 
-def controller():    
+def controller():
     user_input = check_user_input(sys.argv)
     print("====================================================================")
     print("=======================  Reading HTML files  =======================")
+    html_file_list = html_reader.find_html_file(user_input)
+    print(f"Response from find_html_file: {html_file_list}")
+    dup_list = []
+    for path in html_file_list:
+        dup_list.append(html_reader.read_file_and_collect_att(path))
+    unique_list = list(set(sum(dup_list, [])))
+    
 
-    print(f"Attibutes list before: {class_list_no_dup}")
-    html_file_list = find_html_file(user_input)
-    print(f"call find_html_file: {html_file_list}")
-    read_file_and_collect_att(html_file_list)
-    unique_list = list(set(sum(class_list_no_dup, [])))
-    print(f"class_list_no_dup and id: {unique_list}")
-
-    # print(f"Attibutes list after: {class_list_no_dup}")
-
-    # all_attributes = list(set(collect_html_att(user_input)))
-    # # print(f"Unique attributes found: {all_attributes}")
     print(f"Unique attributes found: {len(unique_list)}")
 
     
