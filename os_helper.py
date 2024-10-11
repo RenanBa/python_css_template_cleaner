@@ -1,4 +1,5 @@
 import os
+import sys
 
 def does_path_exist(path):
     print("Checking if path exists...")
