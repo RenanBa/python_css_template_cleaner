@@ -2,6 +2,7 @@ import os_helper
 
 def find_css_files(target_dir):
     print("Searching for css files... ")
+    print(f"Target location: {target_dir}")
     css_files = []
     css_dir = []
     current_dir_list = os_helper.list_dir(target_dir)
@@ -13,7 +14,6 @@ def find_css_files(target_dir):
                 if os_helper.is_directoty(f"{target_dir}/{file}"):
                     print(f"CSS found is a directoy...")
                     target_path = f"{target_dir}/{file}"
-                    print(f"Target location: {target_path}")
                     css_dir.append(target_path)
                 else:
                     print("CSS found is a file")
