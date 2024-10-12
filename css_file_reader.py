@@ -1,10 +1,12 @@
 import os_helper
 
 def find_css_files(target_dir):
-    print("Looking for css files... ")
+    print("Searching for css files... ")
     css_files = []
     css_dir = []
-    for file in os_helper.list_dir(target_dir):
+    current_dir_list = os_helper.list_dir(target_dir)
+    print(f"Listing all files in current dir: {current_dir_list}")
+    for file in current_dir_list:
         if "css" in file.split("."):
             print(f"CSS found.. {file}")
             if os_helper.does_path_exist(f"{target_dir}/{file}"):

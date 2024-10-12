@@ -42,14 +42,32 @@ def controller():
         dup_list.append(html_reader.read_file_and_collect_att(path))
     unique_list = list(set(sum(dup_list, [])))
     
-
     print(f"Unique attributes found: {len(unique_list)}")
 
     
     print("===================================================================")
+    print("===================================================================")
     print("=======================  Reading CSS files  =======================")
+    print("===================================================================")
 
-    css_file_reader.find_css_files(user_input)
+    css_list = css_file_reader.find_css_files(user_input)
+    print(f"First CSS search result: {css_list}")
+
+    # if css files found, append to the css_list for later
+    if len(css_list[0]) >= 1:
+        css_files.append(css_list[0])
+    
+    # if css directory found, search for more css files in these directories
+    if len(css_list[1]) >= 1:
+        css_dir_list = []
+        for css_dir in css_list[1]:
+            css_dir_list.append(css_file_reader.find_css_files(css_dir))
+        print(f"Second search in CSS directory: {css_dir_list}")
+
+
+    # check if css_list[1] has any directory path
+    # If directory exist then search for more css files to
+
     
 
 
