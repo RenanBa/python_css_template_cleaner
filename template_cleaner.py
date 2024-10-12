@@ -31,10 +31,10 @@ css_search_obj = {} # {"css": '../zappizza.github.io/css/style.css', id_match: [
 
 html_reader = HtmlFileReader()
 
-def html_search(path):
+def html_search(paths):
     print("====================================================================")
     print("=======================  Reading HTML files  =======================")
-    html_file_list = html_reader.find_html_file(path)
+    html_file_list = html_reader.find_html_file(paths)
     print(f"Response from find_html_file: {html_file_list}")
     dup_list = []
     for path in html_file_list:
@@ -50,13 +50,15 @@ def controller():
     print("===================================================================")
     print("===================================================================")
     print("=======================  Reading CSS files  =======================")
-    print("===================================================================")
+
 
     css_searching = True
     css_directories = [user_input]
     while css_searching:
+        print("===================================================================")
         css_list = css_file_reader.find_css_files(css_directories[0])
         css_directories.pop(0)
+        print(f"css_directories: {css_directories}")
         print(f"CSS search result: {css_list}")
 
         # if css files found, append to the css_list for later
@@ -67,11 +69,12 @@ def controller():
         if len(css_list[1]) >= 1:
             for css_dir in css_list[1]:
                 css_directories.append(css_dir)
-            print(f"CSS directory to search: {css_directories}")
-        else:
-            print("No CSS directory found")
+
+        if len(css_directories) == 0:
+            print("Ending the search")
             css_searching = False
 
+    print("===================================================================")
     css_files_list = list(sum(css_files, []))
     print(f"List of all css files found: {css_files_list}")
 
