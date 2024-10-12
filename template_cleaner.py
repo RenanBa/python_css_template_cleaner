@@ -31,18 +31,20 @@ css_search_obj = {} # {"css": '../zappizza.github.io/css/style.css', id_match: [
 
 html_reader = HtmlFileReader()
 
-def controller():
-    user_input = os_helper.check_user_input(sys.argv)
+def html_search(path):
     print("====================================================================")
     print("=======================  Reading HTML files  =======================")
-    html_file_list = html_reader.find_html_file(user_input)
+    html_file_list = html_reader.find_html_file(path)
     print(f"Response from find_html_file: {html_file_list}")
     dup_list = []
     for path in html_file_list:
         dup_list.append(html_reader.read_file_and_collect_att(path))
-    unique_list = list(set(sum(dup_list, [])))
-    
-    print(f"Unique attributes found: {len(unique_list)}")
+    return list(set(sum(dup_list, [])))
+
+def controller():
+    user_input = os_helper.check_user_input(sys.argv)
+    unique_att_list = html_search(user_input)
+    print(f"Unique attributes found: {len(unique_att_list)}")
 
     
     print("===================================================================")
@@ -50,23 +52,29 @@ def controller():
     print("=======================  Reading CSS files  =======================")
     print("===================================================================")
 
-    css_list = css_file_reader.find_css_files(user_input)
-    print(f"First CSS search result: {css_list}")
+    css_searching = True
+    css_directories = [user_input]
+    while css_searching:
+        css_list = css_file_reader.find_css_files(css_directories[0])
+        css_directories.pop(0)
+        print(f"CSS search result: {css_list}")
 
-    # if css files found, append to the css_list for later
-    if len(css_list[0]) >= 1:
-        css_files.append(css_list[0])
-    
-    # if css directory found, search for more css files in these directories
-    if len(css_list[1]) >= 1:
-        css_dir_list = []
-        for css_dir in css_list[1]:
-            css_dir_list.append(css_file_reader.find_css_files(css_dir))
-        print(f"Second search in CSS directory: {css_dir_list}")
+        # if css files found, append to the css_list for later
+        if len(css_list[0]) >= 1:
+            css_files.append(css_list[0])
+        
+        # if css directory found, search for more css files in these directories
+        if len(css_list[1]) >= 1:
+            for css_dir in css_list[1]:
+                css_directories.append(css_dir)
+            print(f"CSS directory to search: {css_directories}")
+        else:
+            print("No CSS directory found")
+            css_searching = False
 
+    css_files_list = list(sum(css_files, []))
+    print(f"List of all css files found: {css_files_list}")
 
-    # check if css_list[1] has any directory path
-    # If directory exist then search for more css files to
 
     
 
