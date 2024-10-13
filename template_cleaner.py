@@ -41,6 +41,9 @@ def html_search(paths):
         dup_list.append(html_reader.read_file_and_collect_att(path))
     return list(set(sum(dup_list, [])))
 
+def search_for_files(file_extension):
+    pass
+
 def controller():
     user_input = os_helper.check_user_input(sys.argv)
     unique_att_list = html_search(user_input)
@@ -77,6 +80,7 @@ def controller():
     print("===================================================================")
     css_files_list = list(sum(css_files, []))
     print(f"List of all css files found: {css_files_list}")
+    print(f"Unique attributes found: {len(unique_att_list)}")
 
 
     
