@@ -24,63 +24,53 @@ from html_file_reader import *
 import css_file_reader
 
 
-html_files_found = [] # store absolut path of each html file
+html_files = [] # store absolut path of each html file
 css_files = [] # store absolut path of each css file
 html_search_obj = {} # {"html": '../zappizza.github.io/index.html', id_att: ['abc'], css_att: ['xyz]}
 css_search_obj = {} # {"css": '../zappizza.github.io/css/style.css', id_match: ['abc'], css_match: ['xyz], id_no_match: ['abc'], css_no_match: ['xyz]}
+html_attributes = []
 
 html_reader = HtmlFileReader()
 
-def html_search(paths):
-    print("====================================================================")
-    print("=======================  Reading HTML files  =======================")
-    html_file_list = html_reader.find_html_file(paths)
-    print(f"Response from find_html_file: {html_file_list}")
-    dup_list = []
-    for path in html_file_list:
-        dup_list.append(html_reader.read_file_and_collect_att(path))
-    return list(set(sum(dup_list, [])))
-
-def search_for_files(file_extension):
-    pass
 
 def controller():
     user_input = os_helper.check_user_input(sys.argv)
-    unique_att_list = html_search(user_input)
-    print(f"Unique attributes found: {len(unique_att_list)}")
-
     
     print("===================================================================")
     print("===================================================================")
-    print("=======================  Reading CSS files  =======================")
+    print("=======================  Reading files  =======================")
 
-
-    css_searching = True
-    css_directories = [user_input]
-    while css_searching:
-        print("===================================================================")
-        css_list = css_file_reader.find_css_files(css_directories[0])
-        css_directories.pop(0)
-        print(f"css_directories: {css_directories}")
-        print(f"CSS search result: {css_list}")
-
-        # if css files found, append to the css_list for later
-        if len(css_list[0]) >= 1:
-            css_files.append(css_list[0])
+    # Walk through the given directory tree
+    for root, dirs, files in os.walk(user_input, topdown=True):
+        # Remove files starting with dots
+        for dir in dirs:
+            if dir.startswith("."):
+                dirs.remove(dir)
         
-        # if css directory found, search for more css files in these directories
-        if len(css_list[1]) >= 1:
-            for css_dir in css_list[1]:
-                css_directories.append(css_dir)
+        # Check and collect html or css files
+        for file in files:
+            file_path = os.path.join(root, file)
+            if 'css' in file:
+                css_files.append(file_path)
+            if 'html' in file:
+                html_files.append(file_path)
 
-        if len(css_directories) == 0:
-            print("Ending the search")
-            css_searching = False
+    # collect html/css attributes using list of html files
+    att_list = []
+    for path in html_files:
+        att_list.append(html_reader.read_file_and_collect_att(path))
+    html_attributes = list(set(sum(att_list, []))) # Unify lists and remove duplicated values
+        
+
 
     print("===================================================================")
-    css_files_list = list(sum(css_files, []))
-    print(f"List of all css files found: {css_files_list}")
-    print(f"Unique attributes found: {len(unique_att_list)}")
+    # css_files_list = list(sum(css_files, []))
+    print(f"List of all css files found: {css_files}")
+    print(f"Unique css files found: {len(css_files)}")
+    print(f"Unique html attributes found: {len(html_attributes)}")
+    
+
+    # print(f"Unique html/css attributes found: {len(unique_att_list)}")
 
 
     

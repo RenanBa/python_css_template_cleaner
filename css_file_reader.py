@@ -1,26 +1,6 @@
 import os_helper
 
-def find_css_files(target_dir):
-    print("Searching for css files... ")
-    print(f"Target location: {target_dir}")
-    css_files = []
-    css_dir = []
-    current_dir_list = os_helper.list_dir(target_dir)
-    print(f"Listing all files in current dir: {current_dir_list}")
-    for file in current_dir_list:
-        if os_helper.is_directoty(f"{target_dir}/{file}"):
-            print(f"CSS found is a directoy...")
-            target_path = f"{target_dir}/{file}"
-            css_dir.append(target_path)
-        elif "css" in file:
-            print("CSS found is a file")
-            target_path = f"{target_dir}/{file}"
-            css_files.append(target_path)
-    return css_files, css_dir
                     
-
-
-
 def hold_find_css_files(target_dir):
     print("Looking for css files... ")
     for file in os_helper.list_dir(target_dir):
@@ -29,7 +9,7 @@ def hold_find_css_files(target_dir):
             if os_helper.does_path_exist(f"{target_dir}/{file}") and os_helper.is_directoty(f"{target_dir}/{file}"):
                 target_path = f"{target_dir}/{file}"
                 print(f"Target location: {target_path}")
-                os_helper.change_dir(target_path)
+                os_helper.change_dir(target_path) # not recommended to change working directory 
                 for css_file in os_helper.list_dir(os_helper.get_current_location()):
                     if "css" == css_file.split(".")[-1]:
                         print(f"CSS file to be scanned: {css_file}")

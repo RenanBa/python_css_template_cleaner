@@ -30,9 +30,9 @@ def check_user_input(input):
         print(f"User input is invlaid")
         sys.exit("No directory name was entered")
     
-def change_dir(path):
-    print("Changing directory...")
-    os.chdir(path)
+# def change_dir(path):
+#     print("Changing directory...")
+#     os.chdir(path)
 
 def get_current_location():
     current_dir = os.getcwd()

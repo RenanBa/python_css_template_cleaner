@@ -3,18 +3,6 @@ import os
 
 
 class HtmlFileReader():
-    def find_html_file(self, search_dir):
-        print("Searching for HML files...")
-        current_dir_list = os.listdir(search_dir)
-        print(f"Listing all files in current dir: {current_dir_list}")
-        html_files = []
-        for item in current_dir_list:
-            item_type = item.split(".")
-            if len(item_type) > 1:
-                if item_type[1] == "html":
-                    print(f"HTML files found: {item_type[0]}.{item_type[1]}")
-                    html_files.append(f"{search_dir}/{item_type[0]}.{item_type[1]}")
-        return html_files
 
     def read_file_and_collect_att(self, file_path):
         att_found_html = []
