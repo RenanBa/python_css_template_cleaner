@@ -21,7 +21,7 @@
 import os_helper
 import sys
 from html_file_reader import *
-import css_file_reader
+from css_file_reader import *
 
 
 html_files = [] # store absolut path of each html file
@@ -31,6 +31,7 @@ css_search_obj = {} # {"css": '../zappizza.github.io/css/style.css', id_match: [
 html_attributes = []
 
 html_reader = HtmlFileReader()
+css_reader = CssFileReader()
 
 def get_html_attributes(html_files):
 # collect html/css attributes using list of html files
@@ -63,7 +64,7 @@ def controller():
     html_attr_list = get_html_attributes(html_files)
     
 
-    css_file_reader.read_css_file_search_attr(css_files[2], html_attr_list)
+    css_reader.read_css_file_search_attr(css_files[2], html_attr_list)
         
 
     print("===================================================================")
