@@ -83,32 +83,53 @@ class CssFileReader():
         # End of With open
 
         return loaded_file, css_remove_blocks
+    
+    def update_css_blocks(self, css_blocks):
+        new_css_block = {}
+        for block in css_blocks:
+            print("============ Checking CSS Blocks=================")
+            print(block["target_line"])
+            # Get which list of lines that needs modification
+            line_number_list = block["target_line"]
+            # Get line object with info about the line
+            line_data = block[line_number_list[0]]
+            # Get the string line 
+            line = line_data["line_str"][:-1]  # remove new line from end \n
+            print(line_data)
+            
+            
+            list_line = line.split(" ")
+            for attr in line_data["att"]:
+                # print("--- check css attribute ---")
+                # print(f"attr: {attr}")
+                # print(f"list_line: {list_line}")
+                if attr in list_line:
+                    list_line.remove(attr)
+                    # print(True)
+                # print(f"list_line after: {list_line}")
+            # End of for attr in line_date
+            new_line = " ".join(list_line)
+
+
+            if len(new_line) <= 0:
+                line_data["line_str"] = new_line
+            else:
+                line_data["line_str"] = new_line + "\n"
+            
+
+
+        print("/n")
+        print(css_blocks)    
+        return css_blocks
 
                     
     def read_css_file_search_attr(self, target_dir, att_list):
         print(f"Reading file: {target_dir}")
         att_list = ["list-check", "list-round", "btn", "no-padding", "gap-60", "gap-40", "gap-30"]
         loaded_file, css_remove_blocks = self.read_file(target_dir, att_list)
+        print(loaded_file)
         # print(css_remove_blocks)
-        for block in css_remove_blocks:
-            print(block["target_line"])
-            line_number_list = block["target_line"]
-            line_data = block[line_number_list[0]]
-            line = line_data["line_str"][:-1]
-            print(line_data)
-            # print()
-            list_line = line.split(" ")
-            for attr in line_data["att"]:
-                
-                print(f"attr: {attr}")
-                print(f"list_line: {list_line}")
-                print(list_line)
-                if attr in list_line:
-                    list_line.remove(attr)
-                    print(True)
-                print(f"list_line after: {list_line}")
-
-            # print(css_remove_blocks[1][line])
+        self.update_css_blocks(css_remove_blocks)
 
         # need to check if the previous line has a comma or check if the current line has a comma 
         # at the end. In this case the comma needs to be removed 
