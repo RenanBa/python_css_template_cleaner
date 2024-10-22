@@ -34,7 +34,8 @@ html_reader = HtmlFileReader()
 css_reader = CssFileReader()
 
 def get_html_attributes(html_files):
-# collect html/css attributes using list of html files
+    # collect html/css attributes using list of html files
+    print("=======================  Reading HTML files  =======================")
     for path in html_files:
         html_attributes.append(html_reader.read_file_and_collect_att(path))
     return list(set(sum(html_attributes, []))) # Unify lists and remove duplicated values
@@ -63,7 +64,7 @@ def controller():
 
     html_attr_list = get_html_attributes(html_files)
     
-
+    print("======================= Reading CSS files  =======================")
     css_reader.read_css_file_search_attr(css_files[2], html_attr_list)
         
 
