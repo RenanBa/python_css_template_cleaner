@@ -32,6 +32,11 @@ html_attributes = []
 
 html_reader = HtmlFileReader()
 
+def get_html_attributes(html_files):
+# collect html/css attributes using list of html files
+    for path in html_files:
+        html_attributes.append(html_reader.read_file_and_collect_att(path))
+    return list(set(sum(html_attributes, []))) # Unify lists and remove duplicated values
 
 def controller():
     user_input = os_helper.check_user_input(sys.argv)
@@ -55,31 +60,19 @@ def controller():
             if 'html' in file:
                 html_files.append(file_path)
 
-    # collect html/css attributes using list of html files
-    att_list = []
-    for path in html_files:
-        att_list.append(html_reader.read_file_and_collect_att(path))
-    html_attributes = list(set(sum(att_list, []))) # Unify lists and remove duplicated values
-        
+    html_attr_list = get_html_attributes(html_files)
+    
 
+    css_file_reader.read_css_file_search_attr(css_files[2], html_attr_list)
+        
 
     print("===================================================================")
     # css_files_list = list(sum(css_files, []))
-    print(f"List of all css files found: {css_files}")
-    print(f"Unique css files found: {len(css_files)}")
-    print(f"Unique html attributes found: {len(html_attributes)}")
+    # print(f"List of all css files found: {css_files}")
+    # print(f"css files found: {css_files}")
+    # print(f"Unique html attributes found: {len(html_attr_list)}")
+    # print(f"Unique html attributes found: {html_attr_list}")
     
-
-    # print(f"Unique html/css attributes found: {len(unique_att_list)}")
-
-
-    
-
-
-    
-
-
-
 
 controller()
 print('End of the script')
