@@ -6,15 +6,19 @@ def read_css_file_search_attr(target_dir, att_list):
     att_list = ["list-round", "list-arrow", "error-page", "error-body", "btn"]
 
     css_remove_blocks = []  # holds the curly braces to define block start and end
-    loaded_file = []
+    # Load each line from the file without any modification {1: line, 2: line}
+    loaded_file = {}
+    # Track if the current line is part of a comment block or not
     comment_block = False
+    # remove_block will be used to determine if the css_blocks will be saved to later modification
     remove_block = False
-    count = 0
+    count = 1
     with open(target_dir, mode='r',encoding='UTF-8') as target_file:
         css_blocks = []
         block_track = False
         for line in target_file:
-            loaded_file.append(line)
+            loaded_file[count] = line
+            # loaded_file.append(line)
             print("============")
             
             # Check for css comment blocks
@@ -22,26 +26,27 @@ def read_css_file_search_attr(target_dir, att_list):
                 comment_block = True
             
             if not comment_block:
-                # print(f"counting line: {count}")
                 search = re.findall(r"\.[a-zA-Z0-9_-]*,*|\#[a-zA-Z0-9_-]*,*", line)
-                # print(line)
                 print(search)
                 print(f"SEarch result: {search}")
 
+                # Check for characters that opens a css block
                 if "," in line or "{":
                     block_track = True
                 
+                # Collect the whole css block for later modification if needed
                 if block_track:
                     css_blocks.append({"line_num": count, "line_str": line, "target": False})
 
-
+                # Check if there are matches
                 if len(search) >= 1:
+                    # Go over each match found in the current line
                     for item in search:
-                        att = item[1:]
-                        
-                        if "," in item: # check if there are comma in the item
+                        att = item[1:] # Remove . or # from the start of the string
+                        if "," in item: # check if there are comma in the item and remove it
                             att = att[:-1]
 
+                        # Check if the att is in the html files attribute list
                         if att not in att_list:
                             remove_block = True
                             css_blocks[-1]["target"] = True
@@ -61,7 +66,9 @@ def read_css_file_search_attr(target_dir, att_list):
                         else:
                             print(f"Do Nothing - Item is in the att list")
                             pass
-                        
+                    # End of for each match (found in the current line)
+                # End of if search >= 1
+            # End of if not comment_block
 
             if line[-3:-1] == "*/":
                 comment_block = False
@@ -76,10 +83,9 @@ def read_css_file_search_attr(target_dir, att_list):
                 css_remove_blocks.append(css_blocks)
                 remove_block = False
 
-
-
-
             count += 1
+        # End of for each line
+    # End of With open
     print(count)
     print(loaded_file)
     print(css_remove_blocks)
