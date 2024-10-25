@@ -87,7 +87,7 @@ class CssFileReader():
     def update_css_blocks(self, css_blocks):
         new_css_block = {}
         for block in css_blocks:
-            print("============ Checking CSS Blocks=================")
+            print("============ Updating CSS Blocks =================")
             # print(block["target_line"])
             # Get which list of lines that needs modification
             line_number_list = block["target_line"]
@@ -96,26 +96,15 @@ class CssFileReader():
                 line_data = block[target_line]
                 # Get the string line 
                 line = line_data["line_str"][:-1]  # remove new line from end \n
-                print(f"line_data: {line_data}")
-                
                 # line to be updated 
                 list_line = line.split(" ")
+                # Remove each attribute found in this line
                 for attr in line_data["att"]:
-                    # print("--- check css attribute ---")
-                    # print(f"attr: {attr}")
-                    # print(f"list_line: {list_line}")
-
-
                     if attr in list_line:
-                        # remove the attribute name from the list
                         list_line.remove(attr)
-                        # print(f"Block has previous line: {block}")
-                        # if block[target_line -1]:
-                        #     print(f"Block has previous line: {block[target_line -1]}")
-                        # print(True)
-                    # print(f"list_line after: {list_line}")
                 # End of for attr in line_date
                 
+                # line from List to String
                 new_line = " ".join(list_line)
 
                 # if the new_line has no character, then don't add new line.
@@ -133,13 +122,35 @@ class CssFileReader():
         print(new_css_block)    
         return new_css_block
     
-    def write_new_file(self, lines, new_lines, file_name):
-        # new_css_file = open(file_name, mode='w+')
-        # folder = file_name.split("/")[:-1]
+    def write_new_file(self, old_file, new_lines, file_name):
+        new_css_file = open(file_name, mode='w')
         print(f"New file name: {file_name}")
-        print(new_lines)
-        # for line in lines:
-        #     if 
+        print(new_lines[10])
+        
+        # while writing new file
+        for index, line_number in enumerate(old_file):
+            if line_number in new_lines:
+                if new_lines[line_number] != "":
+                    new_css_file.write(new_lines[line_number])
+                    print(new_lines[line_number])
+            else:
+                new_css_file.write(old_file[line_number])
+                print(old_file[line_number])
+
+
+            # Edge case. 
+            line_number += 1
+            if line_number == len(old_file):
+                writing = False
+        new_css_file.close()
+
+
+            
+
+        
+        
+
+        
 
 
         
@@ -149,10 +160,11 @@ class CssFileReader():
         print(f"Reading file: {target_dir}")
         att_list = ["list-check", "list-round", "btn", "no-padding", "gap-60", "gap-40", "gap-30"]
         loaded_file, css_remove_blocks = self.read_file(target_dir, att_list)
-        print(loaded_file)
-        print(css_remove_blocks)
+        # print(loaded_file)
+        # print(css_remove_blocks)
         updated_blocks = self.update_css_blocks(css_remove_blocks)
         
+        # Create new file and start to write it
         print(target_dir)
         folder = "/".join(target_dir.split("/")[:-1])
         name = target_dir.split("/")[-1]
