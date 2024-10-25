@@ -88,39 +88,61 @@ class CssFileReader():
         new_css_block = {}
         for block in css_blocks:
             print("============ Checking CSS Blocks=================")
-            print(block["target_line"])
+            # print(block["target_line"])
             # Get which list of lines that needs modification
             line_number_list = block["target_line"]
-            # Get line object with info about the line
-            line_data = block[line_number_list[0]]
-            # Get the string line 
-            line = line_data["line_str"][:-1]  # remove new line from end \n
-            print(line_data)
+            for target_line in line_number_list:
+                # Get line object with info about the line
+                line_data = block[target_line]
+                # Get the string line 
+                line = line_data["line_str"][:-1]  # remove new line from end \n
+                print(f"line_data: {line_data}")
+                
+                # line to be updated 
+                list_line = line.split(" ")
+                for attr in line_data["att"]:
+                    # print("--- check css attribute ---")
+                    # print(f"attr: {attr}")
+                    # print(f"list_line: {list_line}")
+
+
+                    if attr in list_line:
+                        # remove the attribute name from the list
+                        list_line.remove(attr)
+                        # print(f"Block has previous line: {block}")
+                        # if block[target_line -1]:
+                        #     print(f"Block has previous line: {block[target_line -1]}")
+                        # print(True)
+                    # print(f"list_line after: {list_line}")
+                # End of for attr in line_date
+                
+                new_line = " ".join(list_line)
+
+                # if the new_line has no character, then don't add new line.
+                if len(new_line) <= 0:
+                    line_data["line_str"] = new_line
+                    # update new_line object
+                    new_css_block[target_line] = new_line
+                else:
+                    line_data["line_str"] = new_line + "\n"
+                    new_css_block[target_line] = new_line
+
+            # End of for target_line in line_number_list     
             
-            
-            list_line = line.split(" ")
-            for attr in line_data["att"]:
-                # print("--- check css attribute ---")
-                # print(f"attr: {attr}")
-                # print(f"list_line: {list_line}")
-                if attr in list_line:
-                    list_line.remove(attr)
-                    # print(True)
-                # print(f"list_line after: {list_line}")
-            # End of for attr in line_date
-            new_line = " ".join(list_line)
-
-
-            if len(new_line) <= 0:
-                line_data["line_str"] = new_line
-            else:
-                line_data["line_str"] = new_line + "\n"
-            
-
-
         print("/n")
-        print(css_blocks)    
-        return css_blocks
+        print(new_css_block)    
+        return new_css_block
+    
+    def write_new_file(self, lines, new_lines, file_name):
+        # new_css_file = open(file_name, mode='w+')
+        # folder = file_name.split("/")[:-1]
+        print(f"New file name: {file_name}")
+        print(new_lines)
+        # for line in lines:
+        #     if 
+
+
+        
 
                     
     def read_css_file_search_attr(self, target_dir, att_list):
@@ -128,8 +150,14 @@ class CssFileReader():
         att_list = ["list-check", "list-round", "btn", "no-padding", "gap-60", "gap-40", "gap-30"]
         loaded_file, css_remove_blocks = self.read_file(target_dir, att_list)
         print(loaded_file)
-        # print(css_remove_blocks)
-        self.update_css_blocks(css_remove_blocks)
+        print(css_remove_blocks)
+        updated_blocks = self.update_css_blocks(css_remove_blocks)
+        
+        print(target_dir)
+        folder = "/".join(target_dir.split("/")[:-1])
+        name = target_dir.split("/")[-1]
+        self.write_new_file(loaded_file, updated_blocks, f"{folder}/new_{name}")
+
 
         # need to check if the previous line has a comma or check if the current line has a comma 
         # at the end. In this case the comma needs to be removed 
