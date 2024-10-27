@@ -1,6 +1,7 @@
 import os_helper
 import re
 
+
 class CssFileReader():
 
     def read_file(self, target_dir, att_list):
@@ -104,38 +105,62 @@ class CssFileReader():
                         list_line.remove(attr)
                 # End of for attr in line_date
                 
+
+                # AFter removing the line, check what is the line before and after the current line
+                    # If the end of current line has { then check the line before
+                    # If the line before has attribute then move the { to the line before
+                    # IF the line before has attribute and ends with comman, remove the comma and move the { to it
+                    # If the line has no attribute, then remove then delete all lines in the current block
+                if len(list_line) == 1:
+                    if list_line[-1] == "{":
+                        prev_line = target_line - 1
+                        if prev_line in block:
+                            print("There is a line before: ", end=" ")
+                            print(block[prev_line])
+                            prev_line_str = block[prev_line]['line_str']
+                            print(f"previous string: {prev_line_str[-1]}")
+                            if prev_line_str[-1] == "," or prev_line_str[-2] == ",":
+                                print("The end of prev_line_str has a comma")
+                                if prev_line_str[-2] == ",":
+                                    new_css_block[prev_line] = prev_line_str[:-2] + " {\n"
+                                else:
+                                    new_css_block[prev_line] = prev_line_str[:-1] + " {\n"
+                                list_line = ""
+
+                                # Update and add the prev_line in the new_css_block
+                                # Empty up the current line and let the bellow actions take care
+                                # new_css_block[prev_line] = new_line
+
+
                 # line from List to String
                 new_line = " ".join(list_line)
 
                 # if the new_line has no character, then don't add new line.
                 if len(new_line) <= 0:
-                    line_data["line_str"] = new_line
-                    # update new_line object
                     new_css_block[target_line] = new_line
                 else:
-                    line_data["line_str"] = new_line + "\n"
-                    new_css_block[target_line] = new_line
+                    new_css_block[target_line] = new_line + "\n"
 
             # End of for target_line in line_number_list     
             
-        print("/n")
+
         print(new_css_block)    
         return new_css_block
     
     def write_new_file(self, old_file, new_lines, file_name):
         new_css_file = open(file_name, mode='w')
-        print(f"New file name: {file_name}")
-        print(new_lines[10])
+        # print(f"New file name: {file_name}")
+        # print(new_lines[10])
         
         # while writing new file
         for index, line_number in enumerate(old_file):
             if line_number in new_lines:
                 if new_lines[line_number] != "":
                     new_css_file.write(new_lines[line_number])
-                    print(new_lines[line_number])
+                    # print(new_lines[line_number])
             else:
                 new_css_file.write(old_file[line_number])
-                print(old_file[line_number])
+                # print(old_file[line_number])
 
 
             # Edge case. 
@@ -143,22 +168,10 @@ class CssFileReader():
             if line_number == len(old_file):
                 writing = False
         new_css_file.close()
-
-
-            
-
-        
-        
-
-        
-
-
-        
-
-                    
+ 
     def read_css_file_search_attr(self, target_dir, att_list):
         print(f"Reading file: {target_dir}")
-        att_list = ["list-check", "list-round", "btn", "no-padding", "gap-60", "gap-40", "gap-30"]
+        att_list = ["list-round", "list-check", "btn", "no-padding", "gap-60", "gap-40", "gap-30"]
         loaded_file, css_remove_blocks = self.read_file(target_dir, att_list)
         # print(loaded_file)
         # print(css_remove_blocks)
