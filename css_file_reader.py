@@ -85,11 +85,11 @@ class CssFileReader():
 
         return loaded_file, css_remove_blocks
     
-    def update_css_blocks(self, css_blocks):
+    def update_css_blocks(self, css_blocks, att_list):
         new_css_block = {}
         for block in css_blocks:
             print("============ Updating CSS Blocks =================")
-            # print(block["target_line"])
+            print(block)
             # Get which list of lines that needs modification
             line_number_list = block["target_line"]
             for target_line in line_number_list:
@@ -113,32 +113,58 @@ class CssFileReader():
                     # If the line has no attribute, then remove then delete all lines in the current block
                 if len(list_line) == 1:
                     if list_line[-1] == "{":
+                        
+                        # While the previous line is an empty string 
                         prev_line = target_line - 1
                         if prev_line in block:
-                            print("There is a line before: ", end=" ")
-                            print(block[prev_line])
-                            prev_line_str = block[prev_line]['line_str']
-                            print(f"previous string: {prev_line_str[-1]}")
-                            if prev_line_str[-1] == "," or prev_line_str[-2] == ",":
-                                print("The end of prev_line_str has a comma")
-                                if prev_line_str[-2] == ",":
-                                    new_css_block[prev_line] = prev_line_str[:-2] + " {\n"
-                                else:
-                                    new_css_block[prev_line] = prev_line_str[:-1] + " {\n"
-                                list_line = ""
+                            is_there_prev_line = True
+                            while is_there_prev_line:
 
-                                # Update and add the prev_line in the new_css_block
-                                # Empty up the current line and let the bellow actions take care
-                                # new_css_block[prev_line] = new_line
+                                print("There is a line before: ", end=" ")
+                                print(block[prev_line])
+                                prev_line_str = block[prev_line]['line_str']
+                                print(f"LIne number: {prev_line}")
+                                print(f"How many lines in the block: {block.keys()}")
+                                print(f"previous string: {prev_line_str}")
+                                
+                                if prev_line_str != "":
 
+                                    if prev_line_str[-1] == "," or prev_line_str[-2] == ",":
+                                        print("The end of prev_line_str has a comma")
+                                        # If previous line has attribute that is in the attribute list to be removed, then skip it
+                                        # if prev_line_str not in att_list:
+                                        if prev_line_str[-2] == ",":
+                                            new_css_block[prev_line] = prev_line_str[:-2] + " {\n"
+                                        else:
+                                            new_css_block[prev_line] = prev_line_str[:-1] + " {\n"
+                                        list_line = ""
+                                        is_there_prev_line = False
+
+
+                                        # Update and add the prev_line in the new_css_block
+                                        # Empty up the current line and let the bellow actions take care
+                                        # new_css_block[prev_line] = new_line
+                                
+                                # End of if comma check
+                                prev_line = prev_line - 1
+                                if prev_line not in block.keys():
+                                    is_there_prev_line = False
+                            # End of while loop
+                        # End if exist a previous line in this block
+                            
+                        # End of check if exist a previous line in block
+                    # End of if last item is {
+                # End of if list_line == 1
 
                 # line from List to String
                 new_line = " ".join(list_line)
 
                 # if the new_line has no character, then don't add new line.
                 if len(new_line) <= 0:
+                    block[target_line]["line_str"] = new_line
                     new_css_block[target_line] = new_line
                 else:
+                    block[target_line]["line_str"] = new_line + "\n"
                     new_css_block[target_line] = new_line + "\n"
 
             # End of for target_line in line_number_list     
@@ -171,17 +197,18 @@ class CssFileReader():
  
     def read_css_file_search_attr(self, target_dir, att_list):
         print(f"Reading file: {target_dir}")
-        att_list = ["list-round", "list-check", "btn", "no-padding", "gap-60", "gap-40", "gap-30"]
+        att_list = ["list-round", "list-arrow", "btn", "no-padding", "gap-60", "gap-40", "gap-30"]
         loaded_file, css_remove_blocks = self.read_file(target_dir, att_list)
         # print(loaded_file)
         # print(css_remove_blocks)
-        updated_blocks = self.update_css_blocks(css_remove_blocks)
+        updated_blocks = self.update_css_blocks(css_remove_blocks, att_list)
         
         # Create new file and start to write it
         print(target_dir)
         folder = "/".join(target_dir.split("/")[:-1])
         name = target_dir.split("/")[-1]
-        self.write_new_file(loaded_file, updated_blocks, f"{folder}/new_{name}")
+        new_file_name = f"{folder}/new_{name}"
+        self.write_new_file(loaded_file, updated_blocks, new_file_name)
 
 
         # need to check if the previous line has a comma or check if the current line has a comma 
