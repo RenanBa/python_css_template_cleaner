@@ -92,6 +92,7 @@ class CssFileReader():
             print(block)
             # Get which list of lines that needs modification
             line_number_list = block["target_line"]
+            delete_block = False
             for target_line in line_number_list:
                 # Get line object with info about the line
                 line_data = block[target_line]
@@ -127,8 +128,7 @@ class CssFileReader():
                                 print(f"How many lines in the block: {block.keys()}")
                                 print(f"previous string: {prev_line_str}")
                                 
-                                if prev_line_str != "":
-
+                                if block[prev_line]['line_str'] != "":
                                     if prev_line_str[-1] == "," or prev_line_str[-2] == ",":
                                         print("The end of prev_line_str has a comma")
                                         # If previous line has attribute that is in the attribute list to be removed, then skip it
@@ -149,12 +149,17 @@ class CssFileReader():
                                 prev_line = prev_line - 1
                                 if prev_line not in block.keys():
                                     is_there_prev_line = False
+                                    delete_block = True
                             # End of while loop
-                        # End if exist a previous line in this block
+                        # End if exist a previous line in this block  
+                        else:
+                            delete_block = True                          
+
                             
                         # End of check if exist a previous line in block
                     # End of if last item is {
                 # End of if list_line == 1
+
 
                 # line from List to String
                 new_line = " ".join(list_line)
@@ -167,7 +172,14 @@ class CssFileReader():
                     block[target_line]["line_str"] = new_line + "\n"
                     new_css_block[target_line] = new_line + "\n"
 
-            # End of for target_line in line_number_list     
+            # End of for target_line in line_number_list   
+            if delete_block:
+                for key in block.keys():
+                    if "line_str" in block[key]:
+                        new_css_block[key] = ""
+                        print(f"Key deleted: {key}")
+
+
             
 
         print(new_css_block)    
@@ -197,7 +209,7 @@ class CssFileReader():
  
     def read_css_file_search_attr(self, target_dir, att_list):
         print(f"Reading file: {target_dir}")
-        att_list = ["list-round", "list-arrow", "btn", "no-padding", "gap-60", "gap-40", "gap-30"]
+        att_list = ["btn", "gap-60", "gap-40", "gap-30"]
         loaded_file, css_remove_blocks = self.read_file(target_dir, att_list)
         # print(loaded_file)
         # print(css_remove_blocks)
