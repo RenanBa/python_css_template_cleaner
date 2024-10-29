@@ -85,7 +85,7 @@ class CssFileReader():
 
         return loaded_file, css_remove_blocks
     
-    def update_css_blocks(self, css_blocks, att_list):
+    def update_css_blocks(self, css_blocks):
         new_css_block = {}
         for block in css_blocks:
             print("============ Updating CSS Blocks =================")
@@ -178,6 +178,10 @@ class CssFileReader():
                     if "line_str" in block[key]:
                         new_css_block[key] = ""
                         print(f"Key deleted: {key}")
+                    # Remove the next line after the block to remove the extra space
+                    if key == list(block.keys())[-1]:
+                        new_css_block[key+1] = ""
+                        print(f"Last key: {key}")
 
 
             
@@ -213,7 +217,7 @@ class CssFileReader():
         loaded_file, css_remove_blocks = self.read_file(target_dir, att_list)
         # print(loaded_file)
         # print(css_remove_blocks)
-        updated_blocks = self.update_css_blocks(css_remove_blocks, att_list)
+        updated_blocks = self.update_css_blocks(css_remove_blocks)
         
         # Create new file and start to write it
         print(target_dir)
